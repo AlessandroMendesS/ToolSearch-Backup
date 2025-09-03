@@ -11,6 +11,7 @@ import Tabs from './Navigation'; // Já estava assim, referenciando a exportaç�
 import TelaTemas from './screens/TelaTemas';
 import TelaLinguagens from './screens/TelaLinguagens';
 import { AuthProvider } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 import AdicionarFerramenta from './screens/AdicionarFerramenta';
 import DetalheFerramenta from './screens/DetalheFerramenta';
 // TelaScannerEmprestimo não é mais importada aqui pois foi removida do Stack
@@ -20,9 +21,10 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <AuthProvider>
-      <NavigationContainer>
-        <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Inicial">
-          <Stack.Screen name="Inicial" component={TelaInicial} />
+      <ThemeProvider>
+        <NavigationContainer>
+          <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Inicial">
+            <Stack.Screen name="Inicial" component={TelaInicial} />
           <Stack.Screen name="BoasVindas" component={TelaBoasVindas} />
           <Stack.Screen name="Cadastro" component={TelaCadastro} />
           <Stack.Screen name="Login" component={TelaLogin} />
@@ -33,7 +35,8 @@ export default function App() {
           {/* <Stack.Screen name="TelaScannerEmprestimo" component={TelaScannerEmprestimo} /> // Removido */}
           <Stack.Screen name="DetalheFerramenta" component={DetalheFerramenta} />
         </Stack.Navigator>
-      </NavigationContainer>
+        </NavigationContainer>
+      </ThemeProvider>
     </AuthProvider>
   );
 }

@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Alert, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Alert, ActivityIndicator, TouchableOpacity, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 import supabase from '../api/supabaseClient';
+import { useTheme } from '../context/ThemeContext';
 
 export default function LerQRCodes() {
+  const { theme } = useTheme();
   const navigation = useNavigation();
   const isFocused = useIsFocused();
   const [permission, requestPermission] = useCameraPermissions();
@@ -60,31 +62,33 @@ export default function LerQRCodes() {
   };
 
   if (!permission) {
-    return <View style={styles.center}><Text>Solicitando permissão da câmera...</Text></View>;
+    return <View style={[styles.center, { backgroundColor: theme.background }]}><Text style={{ color: theme.text }}>Solicitando permissão da câmera...</Text></View>;
   }
   if (!permission.granted) {
     return (
-      <View style={styles.center}>
-        <Ionicons name="warning-outline" size={50} color="#FFA500" />
-        <Text style={styles.infoText}>Precisamos da sua permissão para usar a câmera.</Text>
-        <TouchableOpacity style={styles.button} onPress={requestPermission}>
-          <Text style={styles.buttonText}>Conceder Permissão</Text>
+      <View style={[styles.center, { backgroundColor: theme.background }]}>
+        <StatusBar barStyle={theme.dark ? "light-content" : "dark-content"} backgroundColor={theme.background} />
+        <Ionicons name="warning-outline" size={50} color={theme.error} />
+        <Text style={[styles.infoText, { color: theme.text }]}>Precisamos da sua permissão para usar a câmera.</Text>
+        <TouchableOpacity style={[styles.button, { backgroundColor: theme.primary }]} onPress={requestPermission}>
+          <Text style={[styles.buttonText, { color: theme.buttonText }]}>Conceder Permissão</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.button, styles.buttonCancel]} onPress={() => navigation.goBack()}>
-          <Text style={styles.buttonText}>Cancelar</Text>
+        <TouchableOpacity style={[styles.button, styles.buttonCancel, { backgroundColor: theme.error }]} onPress={() => navigation.goBack()}>
+          <Text style={[styles.buttonText, { color: theme.buttonText }]}>Cancelar</Text>
         </TouchableOpacity>
       </View>
     );
   }
   if (!isFocused) {
-    return <View style={styles.center}><Text>Aguardando foco na tela...</Text></View>;
+    return <View style={[styles.center, { backgroundColor: theme.background }]}><Text style={{ color: theme.text }}>Aguardando foco na tela...</Text></View>;
   }
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <StatusBar barStyle={theme.dark ? "light-content" : "dark-content"} backgroundColor={theme.background} />
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-        <Ionicons name="arrow-back" size={28} color="#fff" />
+        <Ionicons name="arrow-back" size={28} color={theme.text} />
       </TouchableOpacity>
-      <Text style={styles.instructionText}>Aponte para o QR Code da ferramenta</Text>
+      <Text style={[styles.instructionText, { color: theme.text }]}>Aponte para o QR Code da ferramenta</Text>
       <CameraView
         style={StyleSheet.absoluteFillObject}
         onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
@@ -92,8 +96,8 @@ export default function LerQRCodes() {
       />
       {loading && (
         <View style={styles.loadingOverlay}>
-          <ActivityIndicator size="large" color="#00e676" />
-          <Text style={{ color: '#fff', marginTop: 10 }}>Buscando ferramenta...</Text>
+          <ActivityIndicator size="large" color={theme.primary} />
+          <Text style={{ color: theme.text, marginTop: 10 }}>Buscando ferramenta...</Text>
         </View>
       )}
     </View>
@@ -103,7 +107,6 @@ export default function LerQRCodes() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -111,7 +114,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#000',
   },
   backButton: {
     position: 'absolute',
@@ -123,7 +125,6 @@ const styles = StyleSheet.create({
     padding: 6,
   },
   instructionText: {
-    color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
@@ -139,25 +140,21 @@ const styles = StyleSheet.create({
     zIndex: 20,
   },
   infoText: {
-    color: '#fff',
     fontSize: 16,
     textAlign: 'center',
     marginTop: 16,
   },
   button: {
-    backgroundColor: '#00e676',
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 8,
     marginTop: 16,
   },
   buttonText: {
-    color: '#000',
     fontWeight: 'bold',
     fontSize: 16,
   },
   buttonCancel: {
-    backgroundColor: '#ff5252',
     marginTop: 10,
   },
 });

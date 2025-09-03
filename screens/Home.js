@@ -4,6 +4,7 @@ import { Ionicons, MaterialCommunityIcons, FontAwesome5 } from "@expo/vector-ico
 import { useAuth } from "../context/AuthContext";
 import { useNavigation } from '@react-navigation/native';
 import { toolService } from "../api/apiService";
+import { useTheme } from "../context/ThemeContext";
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -25,6 +26,7 @@ const SPACING = (screenWidth - CARD_WIDTH) / 2; // Para centralizar o card ativo
 
 const HomeScreen = () => {
   const { user } = useAuth();
+  const { theme } = useTheme();
   const navigation = useNavigation();
   const [imagemPerfil, setImagemPerfil] = useState(null);
   const [indiceBannerAtivo, setIndiceBannerAtivo] = useState(0);
@@ -97,7 +99,7 @@ const HomeScreen = () => {
 
   const renderMostUsedTool = ({ item }) => (
     <TouchableOpacity
-      style={estilos.cardFerramentaMaisUsada}
+      style={[estilos.cardFerramentaMaisUsada, { backgroundColor: theme.card }]}
       onPress={() => navigation.navigate('DetalheFerramenta', { ferramenta: item })}
     >
       <Image
@@ -109,25 +111,25 @@ const HomeScreen = () => {
           <Text style={estilos.emUsoTexto}>Em uso</Text>
         </View>
       )}
-      <Text style={estilos.nomeFerramentaMaisUsada} numberOfLines={1}>{item.nome}</Text>
+      <Text style={[estilos.nomeFerramentaMaisUsada, { color: theme.text }]} numberOfLines={1}>{item.nome}</Text>
     </TouchableOpacity>
   );
 
   return (
-    <SafeAreaView style={estilos.container}>
-      <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
-      <View style={estilos.topo}>
+    <SafeAreaView style={[estilos.container, { backgroundColor: theme.background }]}>
+      <StatusBar translucent backgroundColor="transparent" barStyle={theme.dark ? "light-content" : "dark-content"} />
+      <View style={[estilos.topo, { backgroundColor: theme.background }]}>
         <View style={estilos.row}>
           <Image
             source={imagemPerfil ? { uri: imagemPerfil } : require("../assets/img/perfil.png")}
             style={estilos.fotoPerfil}
           />
           <View style={{ flex: 1, marginLeft: 12 }}>
-            <Text style={estilos.saudacao}>{saudacao} 👋</Text>
-            <Text style={estilos.nomeUsuario} numberOfLines={1}>{user?.nome || "Usuário"}</Text>
+            <Text style={[estilos.saudacao, { color: theme.text }]}>{saudacao} 👋</Text>
+            <Text style={[estilos.nomeUsuario, { color: theme.text }]} numberOfLines={1}>{user?.nome || "Usuário"}</Text>
           </View>
-          <TouchableOpacity style={estilos.qrButton} onPress={() => navigation.navigate('Ler QR Code')}>
-            <Ionicons name="qr-code-outline" size={28} color="#38a169" />
+          <TouchableOpacity style={[estilos.qrButton, { backgroundColor: theme.primary + '20' }]} onPress={() => navigation.navigate('Ler QR Code')}>
+            <Ionicons name="qr-code-outline" size={28} color={theme.primary} />
           </TouchableOpacity>
         </View>
       </View>
@@ -136,7 +138,7 @@ const HomeScreen = () => {
         contentContainerStyle={estilos.scrollContainer}
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={["#38a169"]} tintColor={"#38a169"} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[theme.primary]} tintColor={theme.primary} />
         }
       >
         {/* Carrossel de Banner de Destaque */}
@@ -187,10 +189,10 @@ const HomeScreen = () => {
                 style={estilos.categoriaRapidaItem}
                 onPress={() => handleNavegarParaPesquisa({ id: cat.id, nome: cat.nomeExato })}
               >
-                <View style={estilos.categoriaIconeContainer}>
-                  <Icon name={cat.iconeNome} size={cat.iconeSize} color={cat.corIcone} />
+                <View style={[estilos.categoriaIconeContainer, { backgroundColor: theme.card }]}>
+                  <Icon name={cat.iconeNome} size={cat.iconeSize} color={theme.text} />
                 </View>
-                <Text style={estilos.categoriaRapidaNome} numberOfLines={1}>{cat.nomeDisplay}</Text>
+                <Text style={[estilos.categoriaRapidaNome, { color: theme.text }]} numberOfLines={1}>{cat.nomeDisplay}</Text>
               </TouchableOpacity>
             );
           })}
@@ -199,9 +201,9 @@ const HomeScreen = () => {
         {/* Seção Ferramentas mais Emprestadas */}
         <View style={estilos.secaoFerramentasEmprestadasContainer}>
           <View style={estilos.secaoTituloContainer}>
-            <Text style={estilos.secaoTitulo}>Ferramentas mais Emprestadas</Text>
+            <Text style={[estilos.secaoTitulo, { color: theme.text }]}>Ferramentas mais Emprestadas</Text>
             <TouchableOpacity onPress={() => navigation.navigate('Buscar', { screen: 'TelaPesquisarFerramentas' })} style={estilos.verTodasButton}>
-              <Text style={estilos.verTodasTexto}>Ver Todas</Text>
+              <Text style={[estilos.verTodasTexto, { color: theme.primary }]}>Ver Todas</Text>
             </TouchableOpacity>
           </View>
 
@@ -217,7 +219,7 @@ const HomeScreen = () => {
               columnWrapperStyle={{ justifyContent: 'space-between' }}
             />
           ) : (
-            <Text style={estilos.nenhumaFerramentaTexto}>Nenhuma ferramenta para mostrar.</Text>
+            <Text style={[estilos.nenhumaFerramentaTexto, { color: theme.text }]}>Nenhuma ferramenta para mostrar.</Text>
           )}
         </View>
 

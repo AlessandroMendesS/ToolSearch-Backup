@@ -5,6 +5,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import supabase from '../api/supabaseClient';
+import { useTheme } from '../context/ThemeContext';
 
 // Grupos de ferramentas com todos os que existem no AdicionarFerramenta.js
 const grupos = [
@@ -17,6 +18,7 @@ const grupos = [
 ];
 
 export default function TelaPesquisarFerramentas({ navigation }) {
+  const { theme } = useTheme();
   const [grupoSelecionado, setGrupoSelecionado] = useState(null);
   const [busca, setBusca] = useState('');
   const [ferramentas, setFerramentas] = useState([]);
@@ -100,11 +102,11 @@ export default function TelaPesquisarFerramentas({ navigation }) {
 
   const renderCategoriaItem = ({ item }) => (
     <TouchableOpacity
-      style={styles.categoriaCard}
+      style={[styles.categoriaCard, { backgroundColor: theme.card }]}
       onPress={() => handleSelecionarGrupo(item)}
       activeOpacity={0.7}
     >
-      <Text style={styles.categoriaTexto}>{item.nome}</Text>
+      <Text style={[styles.categoriaTexto, { color: theme.primary }]}>{item.nome}</Text>
       {item.imagem ? (
         <Image source={item.imagem} style={styles.categoriaImagem} resizeMode="contain" />
       ) : (
@@ -117,7 +119,7 @@ export default function TelaPesquisarFerramentas({ navigation }) {
 
   const renderFerramentaItem = ({ item }) => (
     <TouchableOpacity
-      style={styles.ferramentaCard}
+      style={[styles.ferramentaCard, { backgroundColor: theme.card }]}
       activeOpacity={0.8}
       onPress={() => navigation.navigate('DetalheFerramenta', { ferramenta: item })}
     >
@@ -129,11 +131,11 @@ export default function TelaPesquisarFerramentas({ navigation }) {
         </View>
       )}
       <View style={styles.ferramentaInfoContainer}>
-        <Text style={styles.ferramentaNome}>{item.nome}</Text>
-        <Text style={styles.ferramentaLocal}>Local: {item.local || 'Não informado'}</Text>
+        <Text style={[styles.ferramentaNome, { color: theme.text }]}>{item.nome}</Text>
+        <Text style={[styles.ferramentaLocal, { color: theme.text }]}>Local: {item.local || 'Não informado'}</Text>
         {/* <Text style={styles.ferramentaPatrimonio}>Patrimônio: {item.patrimonio}</Text> */}
         <View style={styles.ferramentaDisponivelContainer}>
-          <Text style={styles.ferramentaDisponivelTexto}>Disponível:</Text>
+          <Text style={[styles.ferramentaDisponivelTexto, { color: theme.text }]}>Disponível:</Text>
           <View style={[
             styles.disponivelIndicator,
             { backgroundColor: item.disponivel ? '#48bb78' : '#f56565' }
@@ -148,16 +150,16 @@ export default function TelaPesquisarFerramentas({ navigation }) {
   const mostrarFerramentasGrupo = !busca.trim() && grupoSelecionado;
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar backgroundColor="#e6f4ea" barStyle="dark-content" />
-      <Text style={styles.title}>Pesquisar</Text>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+      <StatusBar backgroundColor={theme.background} barStyle={theme.dark ? 'light-content' : 'dark-content'} />
+      <Text style={[styles.title, { color: theme.primary }]}>Pesquisar</Text>
 
-      <View style={styles.searchContainer}>
-        <Ionicons name="search-outline" size={22} color="#4a5568" style={styles.searchIcon} />
+      <View style={[styles.searchContainer, { backgroundColor: theme.card }]}>
+        <Ionicons name="search-outline" size={22} color={theme.text} style={styles.searchIcon} />
         <TextInput
-          style={styles.searchInput}
+          style={[styles.searchInput, { color: theme.text }]}
           placeholder="Pesquisar ferramentas..."
-          placeholderTextColor="#a0aec0"
+          placeholderTextColor={theme.text + '80'}
           value={busca}
           onChangeText={(text) => {
             setBusca(text);
@@ -170,7 +172,7 @@ export default function TelaPesquisarFerramentas({ navigation }) {
         />
         {busca.trim() !== '' && (
           <TouchableOpacity onPress={() => setBusca('')} style={styles.clearSearchButton}>
-            <Ionicons name="close-circle-outline" size={22} color="#718096" />
+            <Ionicons name="close-circle-outline" size={22} color={theme.text} />
           </TouchableOpacity>
         )}
       </View>
@@ -181,8 +183,8 @@ export default function TelaPesquisarFerramentas({ navigation }) {
           style={styles.botaoVoltarCategorias}
           onPress={limparBuscaEGrupo}
         >
-          <Ionicons name="arrow-back-outline" size={20} color="#2c5282" />
-          <Text style={styles.botaoVoltarCategoriasTexto}>
+          <Ionicons name="arrow-back-outline" size={20} color={theme.primary} />
+          <Text style={[styles.botaoVoltarCategoriasTexto, { color: theme.primary }]}>
             {grupoSelecionado && !busca.trim() ? `Voltar para Categorias (de ${grupoSelecionado.nome})` : 'Voltar para Categorias'}
           </Text>
         </TouchableOpacity>
@@ -190,15 +192,15 @@ export default function TelaPesquisarFerramentas({ navigation }) {
 
       {loading && (
         <View style={styles.centeredMessageContainer}>
-          <ActivityIndicator size="large" color="#38a169" />
-          <Text style={styles.loadingText}>Carregando...</Text>
+          <ActivityIndicator size="large" color={theme.primary} />
+          <Text style={[styles.loadingText, { color: theme.text }]}>Carregando...</Text>
         </View>
       )}
 
       {!loading && erro && (
         <View style={styles.centeredMessageContainer}>
           <Ionicons name="alert-circle-outline" size={40} color="#e53e3e" />
-          <Text style={styles.erroText}>{erro}</Text>
+          <Text style={[styles.erroText, { color: theme.text }]}>{erro}</Text>
         </View>
       )}
 
@@ -212,7 +214,7 @@ export default function TelaPesquisarFerramentas({ navigation }) {
               contentContainerStyle={styles.listContentContainer}
               ListEmptyComponent={
                 <View style={styles.centeredMessageContainer}>
-                  <Text style={styles.emptyText}>Nenhuma categoria disponível.</Text>
+                  <Text style={[styles.emptyText, { color: theme.text }]}>Nenhuma categoria disponível.</Text>
                 </View>
               }
             />
@@ -225,8 +227,8 @@ export default function TelaPesquisarFerramentas({ navigation }) {
               contentContainerStyle={styles.listContentContainer}
               ListEmptyComponent={
                 <View style={styles.centeredMessageContainer}>
-                  <Ionicons name="sad-outline" size={40} color="#718096" />
-                  <Text style={styles.emptyText}>
+                  <Ionicons name="sad-outline" size={40} color={theme.text} />
+                  <Text style={[styles.emptyText, { color: theme.text }]}>
                     {busca.trim() ? 'Nenhuma ferramenta encontrada para sua busca.' : 'Nenhuma ferramenta nesta categoria.'}
                   </Text>
                 </View>

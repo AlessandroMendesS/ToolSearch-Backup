@@ -14,10 +14,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { emprestimoService } from '../api/apiService';
 import { useAuth } from '../context/AuthContext';
 import QRCode from 'react-native-qrcode-svg';
+import { useTheme } from '../context/ThemeContext';
 
 export default function DetalheFerramenta({ route, navigation }) {
   const { ferramenta: ferramentaInicial } = route.params;
   const { user } = useAuth();
+  const { theme } = useTheme();
 
   const [ferramenta, setFerramenta] = useState(ferramentaInicial);
   const [emprestada, setEmprestada] = useState(!ferramentaInicial.disponivel);
@@ -90,10 +92,10 @@ export default function DetalheFerramenta({ route, navigation }) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="chevron-back" size={28} color="#5D8A70" />
+          <Ionicons name="chevron-back" size={28} color={theme.primary} />
         </TouchableOpacity>
       </View>
       <ScrollView contentContainerStyle={styles.scrollContentContainer}>
@@ -105,22 +107,22 @@ export default function DetalheFerramenta({ route, navigation }) {
               resizeMode="contain"
             />
           ) : (
-            <View style={styles.imagePlaceholder}>
-              <Ionicons name="construct-outline" size={80} color="#B3DBC5" />
+            <View style={[styles.imagePlaceholder, { backgroundColor: theme.card }]}>
+              <Ionicons name="construct-outline" size={80} color={theme.primary} />
             </View>
           )}
         </View>
 
-        <Text style={styles.title}>{ferramenta.nome}</Text>
+        <Text style={[styles.title, { color: theme.text }]}>{ferramenta.nome}</Text>
 
-        <View style={styles.infoContainer}>
-          <Text style={styles.sectionTitle}>Detalhes</Text>
-          <Text style={styles.infoText}>{ferramenta.detalhes || 'Não informado'}</Text>
+        <View style={[styles.infoContainer, { backgroundColor: theme.card }]}>
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>Detalhes</Text>
+          <Text style={[styles.infoText, { color: theme.text }]}>{ferramenta.detalhes || 'Não informado'}</Text>
 
-          <Text style={styles.sectionTitle}>Local</Text>
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>Local</Text>
           <View style={styles.localRow}>
-            <Ionicons name="location-outline" size={16} color="#4A5568" style={{ marginRight: 5 }} />
-            <Text style={styles.infoText}>{ferramenta.local || 'Não informado'}</Text>
+            <Ionicons name="location-outline" size={16} color={theme.text} style={{ marginRight: 5 }} />
+            <Text style={[styles.infoText, { color: theme.text }]}>{ferramenta.local || 'Não informado'}</Text>
           </View>
         </View>
 

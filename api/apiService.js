@@ -195,6 +195,17 @@ export const authService = {
 
       return { success: false, message: mensagem };
     }
+  },
+
+  updateUser: async (userId, userData) => {
+    try {
+      // O token é injetado pelo interceptor, não precisa passar aqui
+      const response = await apiClient.put(`/auth/users/${userId}`, userData);
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao atualizar usuário:", error.response ? error.response.data : error.message);
+      throw error;
+    }
   }
 };
 

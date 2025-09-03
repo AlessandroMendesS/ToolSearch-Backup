@@ -11,11 +11,13 @@ import {
   Platform,
   Dimensions,
   Animated,
-  Easing
+  Easing,
+  StatusBar
 } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useNavigation, useIsFocused, useFocusEffect } from '@react-navigation/native';
+import { useTheme } from '../context/ThemeContext';
 
 // Código de barras do crachá autorizado por padrão
 const CRACHA_AUTORIZADO_PADRAO = '123456789';
@@ -28,6 +30,7 @@ const cornerSize = 30;
 const cornerBorderWidth = 5;
 
 export default function TelaLeituraCodigoBarras() {
+  const { theme } = useTheme();
   const navigation = useNavigation();
   const isFocused = useIsFocused(); // Hook para verificar se a tela está em foco
   const [permission, requestPermission] = useCameraPermissions();
@@ -165,26 +168,27 @@ export default function TelaLeituraCodigoBarras() {
   };
 
   if (!permission) {
-    return <View style={styles.containerCenter}><Text style={styles.infoText}>Solicitando permissão da câmera...</Text></View>;
+    return <View style={[styles.containerCenter, { backgroundColor: theme.background }]}><Text style={[styles.infoText, { color: theme.text }]}>Solicitando permissão da câmera...</Text></View>;
   }
 
   if (!permission.granted) {
     return (
-      <View style={styles.containerCenter}>
-        <Ionicons name="warning-outline" size={50} color="#FFA500" />
-        <Text style={styles.infoText}>Precisamos da sua permissão para usar a câmera.</Text>
-        <TouchableOpacity style={styles.button} onPress={requestPermission}>
-          <Text style={styles.buttonText}>Conceder Permissão</Text>
+      <View style={[styles.containerCenter, { backgroundColor: theme.background }]}>
+        <StatusBar barStyle={theme.dark ? "light-content" : "dark-content"} backgroundColor={theme.background} />
+        <Ionicons name="warning-outline" size={50} color={theme.error} />
+        <Text style={[styles.infoText, { color: theme.text }]}>Precisamos da sua permissão para usar a câmera.</Text>
+        <TouchableOpacity style={[styles.button, { backgroundColor: theme.primary }]} onPress={requestPermission}>
+          <Text style={[styles.buttonText, { color: theme.buttonText }]}>Conceder Permissão</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.button, styles.buttonCancel]} onPress={() => navigation.goBack()}>
-          <Text style={styles.buttonText}>Cancelar</Text>
+        <TouchableOpacity style={[styles.button, styles.buttonCancel, { backgroundColor: theme.error }]} onPress={() => navigation.goBack()}>
+          <Text style={[styles.buttonText, { color: theme.buttonText }]}>Cancelar</Text>
         </TouchableOpacity>
       </View>
     );
   }
 
   if (!isFocused) {
-    return <View style={styles.containerCenter}><Text style={styles.infoText}>Aguardando foco na tela...</Text></View>;
+    return <View style={[styles.containerCenter, { backgroundColor: theme.background }]}><Text style={[styles.infoText, { color: theme.text }]}>Aguardando foco na tela...</Text></View>;
   }
 
   const scanLineStyle = {
@@ -199,28 +203,29 @@ export default function TelaLeituraCodigoBarras() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <StatusBar barStyle={theme.dark ? "light-content" : "dark-content"} backgroundColor={theme.background} />
       {/* Botão de voltar flutuante */}
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-        <Ionicons name="arrow-back" size={28} color="#fff" />
+        <Ionicons name="arrow-back" size={28} color={theme.text} />
       </TouchableOpacity>
 
       {/* Botão de reset manual */}
       <TouchableOpacity style={styles.resetButton} onPress={allowNewScanAttempt}>
-        <Ionicons name="refresh" size={24} color="#fff" />
+        <Ionicons name="refresh" size={24} color={theme.text} />
       </TouchableOpacity>
 
       {/* Status do scanner */}
       <View style={styles.statusContainer}>
-        <Text style={styles.statusText}>
+        <Text style={[styles.statusText, { color: theme.text, backgroundColor: theme.card }]}>
           Status: {scanned ? 'Aguardando reset' : 'Pronto para scan'}
         </Text>
       </View>
 
       {/* Instrução e ícone */}
       <View style={styles.instructionContainer}>
-        <MaterialCommunityIcons name="barcode-scan" size={48} color="#fff" style={{ marginBottom: 8 }} />
-        <Text style={styles.instructionText}>Aponte para o código de barras do crachá</Text>
+        <MaterialCommunityIcons name="barcode-scan" size={48} color={theme.text} style={{ marginBottom: 8 }} />
+        <Text style={[styles.instructionText, { color: theme.text }]}>Aponte para o código de barras do crachá para adicionar a ferramenta</Text>
       </View>
 
       {/* Overlay escurecido com viewfinder destacado */}
@@ -241,21 +246,21 @@ export default function TelaLeituraCodigoBarras() {
       <View style={styles.overlay} pointerEvents="none">
         {/* Viewfinder */}
         <View style={styles.viewfinderContainer}>
-          <View style={styles.viewfinder}>
+          <View style={[styles.viewfinder, { borderColor: theme.primary }]}>
             {/* Cantos coloridos */}
-            <View style={[styles.corner, styles.topLeft]} />
-            <View style={[styles.corner, styles.topRight]} />
-            <View style={[styles.corner, styles.bottomLeft]} />
-            <View style={[styles.corner, styles.bottomRight]} />
+            <View style={[styles.corner, styles.topLeft, { borderColor: theme.primary }]} />
+            <View style={[styles.corner, styles.topRight, { borderColor: theme.primary }]} />
+            <View style={[styles.corner, styles.bottomLeft, { borderColor: theme.primary }]} />
+            <View style={[styles.corner, styles.bottomRight, { borderColor: theme.primary }]} />
             {/* Linha de scan animada */}
-            <Animated.View style={[styles.scanLine, scanLineStyle]} />
+            <Animated.View style={[styles.scanLine, scanLineStyle, { backgroundColor: theme.primary }]} />
           </View>
         </View>
       </View>
       {/* Mensagem de não autorizado */}
       {showUnauthorizedMessage && (
         <View style={styles.unauthorizedMessageContainer}>
-          <Text style={styles.unauthorizedMessageText}>Crachá não autorizado</Text>
+          <Text style={[styles.unauthorizedMessageText, { backgroundColor: theme.error, color: theme.buttonText }]}>Crachá não autorizado</Text>
         </View>
       )}
     </View>
@@ -265,7 +270,6 @@ export default function TelaLeituraCodigoBarras() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -296,9 +300,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statusText: {
-    color: '#fff',
     fontSize: 14,
-    backgroundColor: 'rgba(0,0,0,0.6)',
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 12,
@@ -311,7 +313,6 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   instructionText: {
-    color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
@@ -334,7 +335,6 @@ const styles = StyleSheet.create({
     height: viewfinderHeight,
     borderRadius: 18,
     borderWidth: 2,
-    borderColor: '#00e676',
     backgroundColor: 'rgba(0,0,0,0.15)',
     overflow: 'hidden',
     justifyContent: 'center',
@@ -344,7 +344,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: cornerSize,
     height: cornerSize,
-    borderColor: '#00e676',
     borderWidth: cornerBorderWidth,
   },
   topLeft: {
@@ -380,7 +379,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 4,
-    backgroundColor: '#00e676',
     opacity: 0.85,
     borderRadius: 2,
   },
@@ -393,10 +391,8 @@ const styles = StyleSheet.create({
     zIndex: 20,
   },
   unauthorizedMessageText: {
-    color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
-    backgroundColor: 'rgba(255,0,0,0.7)',
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 8,
@@ -406,28 +402,23 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#000',
   },
   infoText: {
-    color: '#fff',
     fontSize: 16,
     textAlign: 'center',
     marginTop: 16,
   },
   button: {
-    backgroundColor: '#00e676',
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 8,
     marginTop: 16,
   },
   buttonText: {
-    color: '#000',
     fontWeight: 'bold',
     fontSize: 16,
   },
   buttonCancel: {
-    backgroundColor: '#ff5252',
     marginTop: 10,
   },
 });
