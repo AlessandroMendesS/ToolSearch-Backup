@@ -7,14 +7,14 @@ import TelaInicial from './screens/TelaInicial';
 import TelaBoasVindas from './screens/TelaBoasVindas';
 import TelaCadastro from './screens/TelaCadastro';
 import TelaLogin from './screens/TelaLogin';
-import Tabs from './Navigation'; // Já estava assim, referenciando a exportação padrão de Navigation.js
+import Tabs from './Navigation'; 
 import TelaTemas from './screens/TelaTemas';
 import TelaLinguagens from './screens/TelaLinguagens';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import AdicionarFerramenta from './screens/AdicionarFerramenta';
 import DetalheFerramenta from './screens/DetalheFerramenta';
-// TelaScannerEmprestimo não é mais importada aqui pois foi removida do Stack
+
 
 const Stack = createNativeStackNavigator();
 
@@ -32,7 +32,6 @@ export default function App() {
           <Stack.Screen name="Linguagens" component={TelaLinguagens} />
           <Stack.Screen name="AdicionarFerramenta" component={AdicionarFerramenta} />
           <Stack.Screen name="Tabs" component={Tabs} />
-          {/* <Stack.Screen name="TelaScannerEmprestimo" component={TelaScannerEmprestimo} /> // Removido */}
           <Stack.Screen name="DetalheFerramenta" component={DetalheFerramenta} />
         </Stack.Navigator>
         </NavigationContainer>

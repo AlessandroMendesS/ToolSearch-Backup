@@ -10,15 +10,15 @@ const { width: screenWidth } = Dimensions.get('window');
 
 // Ícones de Categorias Rápidas conforme a imagem
 const categoriasRapidasHome = [
-  { id: '1', nomeExato: 'Furadeiras', nomeDisplay: "Elétricas", IconeComponent: MaterialCommunityIcons, iconeNome: "drill", iconeSize: 26, corIcone: "#4A5568" },
+  { id: '1', nomeExato: 'Furadeiras', nomeDisplay: "Elétricas", IconeComponent: MaterialCommunityIcons, iconeNome: "power-plug-outline", iconeSize: 26, corIcone: "#4A5568" },
   { id: '2', nomeExato: 'Chaves', nomeDisplay: "Manuais", IconeComponent: FontAwesome5, iconeNome: "screwdriver", iconeSize: 23, corIcone: "#4A5568" },
-  { id: '4', nomeExato: 'Medidores', nomeDisplay: "Medidos", IconeComponent: MaterialCommunityIcons, iconeNome: "tape-measure", iconeSize: 26, corIcone: "#4A5568" },
+  { id: '4', nomeExato: 'Medidores', nomeDisplay: "Medidores", IconeComponent: MaterialCommunityIcons, iconeNome: "tape-measure", iconeSize: 26, corIcone: "#4A5568" },
 ];
 
 // Dados para o banner de destaque (simulando um item de carrossel)
 const bannerDestaqueData = [
-  { id: 'mais_utilizada', titulo: "Ferramenta Mais Utilizada", corFundo: "#68D391" },
-  { id: 'menos_utilizada', titulo: "Ferramenta Menos Utilizada", corFundo: "#F6AD55" },
+  { id: 'mais_utilizada', titulo: "", corFundo: "#68D391" },
+  { id: 'menos_utilizada', titulo: "", corFundo: "#F6AD55" },
 ];
 
 const CARD_WIDTH = screenWidth * 0.9;
@@ -34,6 +34,7 @@ const HomeScreen = () => {
   const [mostUsedTools, setMostUsedTools] = useState([]);
   const [loadingMostUsed, setLoadingMostUsed] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [leastUsedTool, setLeastUsedTool] = useState(null);
 
   // Função para buscar todos os dados da Home (incluindo ferramentas mais utilizadas)
   const fetchData = async () => {
@@ -42,8 +43,13 @@ const HomeScreen = () => {
       const response = await toolService.getMostUsedTools();
       if (response.success && response.tools) {
         setMostUsedTools(response.tools);
+        // Definir a ferramenta menos utilizada (última do array ordenado)
+        if (response.tools.length > 0) {
+          setLeastUsedTool(response.tools[response.tools.length - 1]);
+        } else {
+          setLeastUsedTool(null);
+        }
       }
-      // Aqui você pode adicionar chamadas para buscar outros dados da Home se necessário
     } catch (error) {
       console.error("Erro ao buscar dados da Home:", error);
     } finally {
@@ -150,14 +156,41 @@ const HomeScreen = () => {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={estilos.carrosselContainer}
             onScroll={onScrollBanner}
-            scrollEventThrottle={16} // Para onScroll funcionar bem no Android
+            scrollEventThrottle={16}
             decelerationRate="fast"
-            snapToInterval={CARD_WIDTH} // Importante para o efeito de snap correto
+            snapToInterval={CARD_WIDTH}
             snapToAlignment="start"
           >
             {bannerDestaqueData.map((banner, index) => (
-              <View key={banner.id} style={[estilos.bannerCard, { backgroundColor: banner.corFundo, width: CARD_WIDTH }]}>
+              <View key={banner.id} style={[estilos.bannerCard, { backgroundColor: banner.corFundo, width: CARD_WIDTH }]}> 
                 <Text style={estilos.bannerTexto}>{banner.titulo}</Text>
+                {/* Exibir ferramenta mais ou menos utilizada conforme o banner ativo */}
+                {banner.id === 'mais_utilizada' && mostUsedTools.length > 0 && (
+                  <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', borderRadius: 20, padding: 12, marginBottom: 23, elevation: 2 }}>
+                    <Image
+                      source={mostUsedTools[0]?.imagem_url ? { uri: mostUsedTools[0].imagem_url } : require('../assets/img/inicio.png')}
+                      style={{ width: 64, height: 64, borderRadius: 12, backgroundColor: '#f0f0f0', borderWidth: 1, borderColor: '#e0e0e0', marginRight: 16 }}
+                      resizeMode="cover"
+                    />
+                    <View style={{ flex: 1, marginLeft: 0 }}>
+                      <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#333', marginBottom: 4 }}>Ferramenta mais utilizada</Text>
+                      <Text style={{ fontSize: 15, color: '#555' }}>{mostUsedTools[0]?.nome || 'Nome da ferramenta'}</Text>
+                    </View>
+                  </View>
+                )}
+                {banner.id === 'menos_utilizada' && leastUsedTool && (
+                  <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', borderRadius: 20, padding: 12, marginBottom: 22, elevation: 2 }}>
+                    <Image
+                      source={leastUsedTool?.imagem_url ? { uri: leastUsedTool.imagem_url } : require('../assets/img/inicio.png')}
+                      style={{ width: 64, height: 64, borderRadius: 12, backgroundColor: '#f0f0f0', borderWidth: 1, borderColor: '#e0e0e0', marginRight: 16 }}
+                      resizeMode="cover"
+                    />
+                    <View style={{ flex: 1, marginLeft: 0 }}>
+                      <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#333', marginBottom: 4 }}>Ferramenta menos utilizada</Text>
+                      <Text style={{ fontSize: 15, color: '#555' }}>{leastUsedTool?.nome || 'Nome da ferramenta'}</Text>
+                    </View>
+                  </View>
+                )}
               </View>
             ))}
           </ScrollView>
@@ -182,14 +215,15 @@ const HomeScreen = () => {
         {/* Categorias Rápidas */}
         <View style={estilos.categoriasRapidasContainer}>
           {categoriasRapidasHome.map((cat) => {
+            const grupo = { id: cat.id, nome: cat.nomeExato };
             const Icon = cat.IconeComponent;
             return (
               <TouchableOpacity
                 key={cat.id}
                 style={estilos.categoriaRapidaItem}
-                onPress={() => handleNavegarParaPesquisa({ id: cat.id, nome: cat.nomeExato })}
+                onPress={() => handleNavegarParaPesquisa(grupo)}
               >
-                <View style={[estilos.categoriaIconeContainer, { backgroundColor: theme.card }]}>
+                <View style={[estilos.categoriaIconeContainer, { backgroundColor: theme.card }]}> 
                   <Icon name={cat.iconeNome} size={cat.iconeSize} color={theme.text} />
                 </View>
                 <Text style={[estilos.categoriaRapidaNome, { color: theme.text }]} numberOfLines={1}>{cat.nomeDisplay}</Text>

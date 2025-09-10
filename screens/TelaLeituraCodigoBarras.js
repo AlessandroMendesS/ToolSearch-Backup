@@ -224,8 +224,8 @@ export default function TelaLeituraCodigoBarras() {
 
       {/* Instrução e ícone */}
       <View style={styles.instructionContainer}>
-        <MaterialCommunityIcons name="barcode-scan" size={48} color={theme.text} style={{ marginBottom: 8 }} />
-        <Text style={[styles.instructionText, { color: theme.text }]}>Aponte para o código de barras do crachá para adicionar a ferramenta</Text>
+        <MaterialCommunityIcons name="barcode-scan" size={48} color="#fff" style={{ marginBottom: 8 }} />
+        <Text style={styles.instructionText}>Aponte para o código de barras do crachá para adicionar a ferramenta</Text>
       </View>
 
       {/* Overlay escurecido com viewfinder destacado */}
@@ -278,7 +278,7 @@ const styles = StyleSheet.create({
     top: 50,
     left: 20,
     zIndex: 10,
-    backgroundColor: 'rgba(0,0,0,0.6)',
+    backgroundColor: 'rgba(255, 255, 255, 0.6)',
     borderRadius: 24,
     padding: 6,
   },
@@ -287,7 +287,7 @@ const styles = StyleSheet.create({
     top: 50,
     right: 20,
     zIndex: 10,
-    backgroundColor: 'rgba(0,0,0,0.6)',
+    backgroundColor: 'rgba(255, 255, 255, 0.6)',
     borderRadius: 24,
     padding: 6,
   },
@@ -304,6 +304,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 12,
+    
   },
   instructionContainer: {
     position: 'absolute',
@@ -311,20 +312,19 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     zIndex: 10,
+    
   },
   instructionText: {
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
-    textShadowColor: '#000',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 2,
+    color: '#fff',
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.45)',
+    backgroundColor: 'rgba(98, 98, 98, 0.45)',
   },
   viewfinderContainer: {
     justifyContent: 'center',
@@ -335,7 +335,7 @@ const styles = StyleSheet.create({
     height: viewfinderHeight,
     borderRadius: 18,
     borderWidth: 2,
-    backgroundColor: 'rgba(0,0,0,0.15)',
+    backgroundColor: 'rgba(0, 0, 0, 0.15)',
     overflow: 'hidden',
     justifyContent: 'center',
     alignItems: 'center',
